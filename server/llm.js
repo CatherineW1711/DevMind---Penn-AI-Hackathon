@@ -14,6 +14,10 @@ function getLLMClient() {
 }
 
 async function callLLM(systemPrompt, userPrompt) {
+  if (process.env.MOCK_LLM === "true") {
+    return JSON.stringify({ _mock: true });
+  }
+
   const { provider, client } = getLLMClient();
 
   if (provider === "openai") {
