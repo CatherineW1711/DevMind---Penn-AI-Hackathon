@@ -4,6 +4,8 @@ import RefactorPanel from "./components/RefactorPanel";
 import TeamSidebar from "./components/TeamSidebar";
 import AuditLog from "./components/AuditLog";
 
+const API_BASE = "https://devmind-penn-ai-hackathon.onrender.com";
+
 const ENGINEER_CODE = {
   "Alice Chen": {
     js: {
@@ -453,7 +455,7 @@ function timestamp() {
 async function safeJsonResponse(res) {
   const text = await res.text();
   if (!text || text.trim() === "") {
-    throw new Error("Server returned empty response. Make sure the backend is running on port 3001.");
+    throw new Error("Server returned empty response. Check that the backend is reachable.");
   }
   try {
     return JSON.parse(text);
@@ -484,7 +486,7 @@ export default function App() {
   const [auditLog, setAuditLog] = useState([]);
 
   useEffect(() => {
-    fetch("/api/team-context")
+    fetch(`${API_BASE}/api/team-context`)
       .then(r => r.json())
       .then(setTeamContext)
       .catch(console.error);
@@ -527,7 +529,7 @@ export default function App() {
     addAuditEntry("analyze", "Code Analyzed", `${code.split("\n").length} lines · ${language}`);
 
     try {
-      const res = await fetch("/api/analyze", {
+      const res = await fetch(`${API_BASE}/api/analyze`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code, language, engineer })
@@ -552,7 +554,7 @@ export default function App() {
     addAuditEntry("refactor_generate", "Refactor Options Generated", `Based on ${diagnosis.issues?.length || 0} issues`);
 
     try {
-      const res = await fetch("/api/refactor", {
+      const res = await fetch(`${API_BASE}/api/refactor`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code: originalCode, language, issues: diagnosis.issues, engineer })
